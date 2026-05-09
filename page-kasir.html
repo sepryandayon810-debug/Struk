@@ -28,6 +28,11 @@
       z-index: 100;
     }
     .header h1 { font-size: 1.1rem; }
+    .header-kiri {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
     .btn-icon {
       background: transparent; border: none; color: #fff;
       font-size: 1.3rem; padding: 4px; cursor: pointer;
@@ -226,15 +231,16 @@
     }
     .modal-box {
       background: #fff;
-      border-radius: 4px;
-      max-width: 320px;
+      border-radius: 8px;
+      max-width: 340px;
       width: 100%;
-      max-height: 80vh;
+      max-height: 85vh;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
     .modal-header {
-      padding: 12px 16px;
+      padding: 14px 16px;
       border-bottom: 1px solid #eee;
       display: flex;
       justify-content: space-between;
@@ -250,14 +256,14 @@
     }
     .struk-preview {
       padding: 20px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.85rem;
-      line-height: 1.5;
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
       color: #000;
       background: #fff;
       overflow-y: auto;
       white-space: pre-wrap;
-      text-align: center;
+      word-break: break-word;
     }
     .modal-footer {
       padding: 12px 16px;
@@ -267,20 +273,29 @@
     }
     .modal-footer button {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       border: none;
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
+      font-size: 0.95rem;
     }
     .btn-ok { background: #0984e3; color: #fff; }
     .btn-ok:active { background: #0770c2; }
+    .btn-print-modal {
+      background: #00b894;
+      color: #fff;
+    }
+    .btn-print-modal:active { background: #00a383; }
   </style>
 </head>
 <body>
 
   <header class="header">
-    <h1>🧾 Setruk</h1>
+    <div class="header-kiri">
+      <button class="btn-icon" onclick="location.href='page-riwayat.html'">📋</button>
+      <h1>🧾 Setruk</h1>
+    </div>
     <button class="btn-icon" onclick="location.href='page-setting.html'">⚙️</button>
   </header>
 
@@ -330,10 +345,9 @@
 
   <script>
     // ═══════════════════════════════════════
-    // KASIR LOGIC — SEMUA DI SINI
+    // KASIR LOGIC
     // ═══════════════════════════════════════
 
-    // ─── DATA PRODUK (ganti dengan Firebase kamu nanti) ───
     const produkList = [
       { id: 1, nama: 'Kopi Hitam', harga: 8000 },
       { id: 2, nama: 'Teh Manis', harga: 5000 },
@@ -478,6 +492,9 @@
         waktu: new Date().toISOString()
       };
 
+      // ─── SIMPAN KE RIWAYAT ───
+      simpanRiwayat(transaksiTerakhir);
+
       const setting = getS();
       if (setting.autoPrint) printStruk(transaksiTerakhir);
 
@@ -485,57 +502,81 @@
       resetKasir();
     }
 
+    // ─── SIMPAN RIWAYAT KE LOCALSTORAGE ───
+    function simpanRiwayat(tx) {
+      let riwayat = [];
+      try {
+        riwayat = JSON.parse(localStorage.getItem('kasirin_riwayat')) || [];
+      } catch(e) { riwayat = []; }
+      riwayat.unshift(tx); // Tambah di paling atas
+      if (riwayat.length > 100) riwayat = riwayat.slice(0, 100); // Max 100
+      localStorage.setItem('kasirin_riwayat', JSON.stringify(riwayat));
+    }
+
     // ═══════════════════════════════════════════════════════
-    // ⬇️⬇️⬇️ INI BAGIAN YANG SUDAH DIPERBAIKI ⬇️⬇️⬇️
+    // PRINT STRUK — SUDAH RAPI + TOMBOL PRINT DI MODAL
     // ═══════════════════════════════════════════════════════
 
-    // ─── PRINT STRUK ───
     function printStruk(tx) {
       const s = getS();
 
-      // Format struk kertas kecil (font struk thermal)
+      // Format struk rapi (alignment kiri/kanan pakai spasi)
       let struk = '';
-      struk += '      ' + s.namaToko + '\n';
-      if (s.alamat) struk += '  ' + s.alamat + '\n';
-      if (s.telepon) struk += '  Telp: ' + s.telepon + '\n';
-      struk += '--------------------------------\n';
-      struk += '      STRUK TRANSAKSI\n';
-      struk += '--------------------------------\n';
-      struk += 'Tgl: ' + new Date().toLocaleString('id-ID') + '\n';
-      struk += '--------------------------------\n';
+      struk += padCenter(s.namaToko, 32) + '\n';
+      if (s.alamat) struk += padCenter(s.alamat, 32) + '\n';
+      if (s.telepon) struk += padCenter('Telp: ' + s.telepon, 32) + '\n';
+      struk += lineGaris(32) + '\n';
+      struk += padCenter('STRUK TRANSAKSI', 32) + '\n';
+      struk += lineGaris(32) + '\n';
+      struk += padKiri('Tgl: ' + new Date().toLocaleString('id-ID'), 32) + '\n';
+      struk += lineGaris(32) + '\n';
 
       tx.items.forEach(i => {
-        struk += i.nama + '\n';
-        struk += '  ' + i.qty + ' x ' + fmt(i.harga) + ' = ' + fmt(i.harga * i.qty) + '\n';
+        struk += padKiri(i.nama, 32) + '\n';
+        struk += padKanan(i.qty + ' x ' + fmt(i.harga), 16) + padKanan(fmt(i.harga * i.qty), 16) + '\n';
       });
 
-      struk += '--------------------------------\n';
-      struk += 'TOTAL    : ' + fmt(tx.total) + '\n';
-      struk += 'BAYAR    : ' + fmt(tx.bayar) + '\n';
-      struk += 'KEMBALI  : ' + fmt(tx.kembalian) + '\n';
-      struk += '--------------------------------\n';
-      struk += '    ' + s.footer + '\n';
-      struk += '       Terima Kasih\n';
-      struk += '\n\n\n'; // Feed kertas
+      struk += lineGaris(32) + '\n';
+      struk += padKiri('TOTAL', 16) + padKanan(fmt(tx.total), 16) + '\n';
+      struk += padKiri('BAYAR', 16) + padKanan(fmt(tx.bayar), 16) + '\n';
+      struk += padKiri('KEMBALI', 16) + padKanan(fmt(tx.kembalian), 16) + '\n';
+      struk += lineGaris(32) + '\n';
+      struk += padCenter(s.footer, 32) + '\n';
+      struk += '\n\n\n';
 
       // ─── KIRIM KE ANDROID NATIVE ───
       if (window.AndroidBridge && window.AndroidBridge.printStruk) {
         window.AndroidBridge.printStruk(struk, s.printerMAC);
-        return; // Langsung print, tidak muncul preview
+        return;
       }
-
       if (window.Capacitor && window.Capacitor.Plugins?.BluetoothPrinter) {
         window.Capacitor.Plugins.BluetoothPrinter.print({ mac: s.printerMAC, data: struk });
-        return; // Langsung print, tidak muncul preview
+        return;
       }
 
       // ─── FALLBACK: PREVIEW MODAL DI BROWSER ───
-      tampilPreviewStruk(struk);
+      tampilPreviewStruk(struk, tx);
+    }
+
+    // ─── HELPER FORMAT STRUK ───
+    function padCenter(str, width) {
+      const pad = Math.max(0, width - str.length);
+      const padLeft = Math.floor(pad / 2);
+      const padRight = Math.ceil(pad / 2);
+      return ' '.repeat(padLeft) + str + ' '.repeat(padRight);
+    }
+    function padKiri(str, width) {
+      return str + ' '.repeat(Math.max(0, width - str.length));
+    }
+    function padKanan(str, width) {
+      return ' '.repeat(Math.max(0, width - str.length)) + str;
+    }
+    function lineGaris(width) {
+      return '-'.repeat(width);
     }
 
     // ─── TAMPILKAN PREVIEW STRUK (Modal) ───
-    function tampilPreviewStruk(strukText) {
-      // Hapus modal lama kalau ada
+    function tampilPreviewStruk(strukText, txData) {
       const lama = document.getElementById('modal-struk');
       if (lama) lama.remove();
 
@@ -550,11 +591,33 @@
           </div>
           <div class="struk-preview">${strukText.replace(/\n/g, '<br>')}</div>
           <div class="modal-footer">
-            <button class="btn-ok" onclick="tutupPreview()">OK / Tutup</button>
+            <button class="btn-print-modal" onclick="printDariModal()">🖨 Print</button>
+            <button class="btn-ok" onclick="tutupPreview()">Tutup</button>
           </div>
         </div>
       `;
       document.body.appendChild(modal);
+
+      // Simpan data transaksi untuk print ulang dari modal
+      window.__strukData = strukText;
+      window.__txData = txData;
+    }
+
+    // ─── PRINT DARI MODAL (Fallback browser) ───
+    function printDariModal() {
+      if (window.AndroidBridge && window.AndroidBridge.printStruk) {
+        const s = getS();
+        window.AndroidBridge.printStruk(window.__strukData, s.printerMAC);
+      } else if (window.Capacitor?.Plugins?.BluetoothPrinter) {
+        const s = getS();
+        window.Capacitor.Plugins.BluetoothPrinter.print({ mac: s.printerMAC, data: window.__strukData });
+      } else {
+        // Browser fallback: window.print() atau alert
+        const w = window.open('', '_blank');
+        w.document.write('<pre style="font-family:Courier New;font-size:12px">' + window.__strukData + '</pre>');
+        w.document.close();
+        w.print();
+      }
     }
 
     // ─── TUTUP PREVIEW ───
@@ -562,10 +625,6 @@
       const modal = document.getElementById('modal-struk');
       if (modal) modal.remove();
     }
-
-    // ═══════════════════════════════════════════════════════
-    // ⬆️⬆️⬆️ SAMPAI SINI PERBAIKANNYA ⬆️⬆️⬆️
-    // ═══════════════════════════════════════════════════════
 
     // ─── PRINT ULANG ───
     function printUlang() {
