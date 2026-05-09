@@ -1,0 +1,238 @@
+/* ─── RESET & BASE ─── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f6fa;
+  color: #2d3436;
+  height: 100%;
+  overflow: hidden; /* Capacitor WebView feel */
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2d3436;
+  color: #fff;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-header h1 { font-size: 1.1rem; }
+
+/* ─── BUTTONS ─── */
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  padding: 4px;
+}
+.btn-primary {
+  background: #00b894;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.btn-success {
+  background: #0984e3;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.btn-secondary {
+  background: #dfe6e9;
+  color: #2d3436;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+}
+.btn-full { width: 100%; }
+.btn-qty {
+  width: 32px; height: 32px;
+  border: 1px solid #b2bec3;
+  background: #fff;
+  border-radius: 6px;
+  font-weight: bold;
+}
+.btn-hapus {
+  background: #ff7675;
+  color: #fff;
+  border: none;
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+
+/* ─── PANEL ─── */
+.panel {
+  background: #fff;
+  margin: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.panel h3 {
+  font-size: 0.9rem;
+  color: #636e72;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ─── INPUT MANUAL ─── */
+.form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.form-row input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.form-row input:first-child { flex: 2; }
+
+/* ─── PRODUK GRID ─── */
+.grid-produk {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  max-height: 35vh;
+  overflow-y: auto;
+}
+.produk-card {
+  background: #74b9ff;
+  color: #fff;
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s;
+}
+.produk-card:active { transform: scale(0.96); }
+.produk-nama { font-weight: 600; font-size: 0.95rem; }
+.produk-harga { font-size: 0.85rem; opacity: 0.95; margin-top: 4px; }
+
+/* ─── KERANJANG ─── */
+.keranjang-list {
+  max-height: 22vh;
+  overflow-y: auto;
+}
+.keranjang-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f2f6;
+}
+.ki-info { flex: 1; }
+.ki-nama { font-weight: 600; font-size: 0.95rem; }
+.ki-harga { font-size: 0.8rem; color: #636e72; }
+.ki-aksi { display: flex; align-items: center; gap: 4px; margin: 0 8px; }
+.ki-qty { min-width: 24px; text-align: center; font-weight: 700; }
+.ki-subtotal { font-weight: 700; min-width: 90px; text-align: right; }
+
+/* ─── FOOTER BAYAR (Fixed) ─── */
+.footer-bayar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  padding: 12px 16px;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+  z-index: 99;
+}
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.total-harga { color: #d63031; }
+.bayar-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.bayar-row input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.btn-row { display: flex; gap: 8px; }
+.btn-row .btn-full { flex: 2; }
+
+/* ─── SETTING PAGE ─── */
+.page-setting { overflow-y: auto; }
+.setting-container { padding-bottom: 40px; }
+.setting-group {
+  background: #fff;
+  margin: 10px;
+  padding: 14px;
+  border-radius: 12px;
+}
+.setting-group h3 {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  color: #2d3436;
+}
+.setting-group label {
+  display: block;
+  font-size: 0.8rem;
+  color: #636e72;
+  margin: 8px 0 4px;
+}
+.setting-group input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f2f6;
+}
+.toggle-row input[type="checkbox"] {
+  width: 22px; height: 22px;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2d3436;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  z-index: 999;
+  animation: fadeup 0.3s ease;
+}
+@keyframes fadeup {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ─── SCROLLBAR HIDE ─── */
+::-webkit-scrollbar { width: 0px; background: transparent; }
