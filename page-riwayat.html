@@ -152,22 +152,16 @@
     <h1>📋 Riwayat Transaksi</h1>
   </header>
 
-  <div class="container" id="list-riwayat">
-    <!-- Diisi JS -->
-  </div>
+  <div class="container" id="list-riwayat"></div>
 
   <script>
-    // ═══════════════════════════════════════
-    // RIWAYAT LOGIC
-    // ═══════════════════════════════════════
-
     const fmt = (n) => 'Rp ' + parseInt(n||0).toLocaleString('id-ID');
     const getS = () => {
       try {
         return JSON.parse(localStorage.getItem('kasirin_setting')) || {
-          namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false
+          namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', namaKasir:'', printerMAC:'', autoPrint:false
         };
-      } catch(e) { return {namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false}; }
+      } catch(e) { return {namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', namaKasir:'', printerMAC:'', autoPrint:false}; }
     };
     const toast = (msg) => {
       const el = document.createElement('div');
@@ -177,25 +171,15 @@
       setTimeout(() => el.remove(), 2500);
     };
 
-    // ─── LOAD RIWAYAT ───
     function loadRiwayat() {
       const box = document.getElementById('list-riwayat');
-      if (!box) {
-        console.error('[Riwayat] Element #list-riwayat tidak ditemukan!');
-        return;
-      }
+      if (!box) return;
 
       let riwayat = [];
       try {
         const raw = localStorage.getItem('kasirin_riwayat');
-        console.log('[Riwayat] Raw data:', raw);
         riwayat = raw ? JSON.parse(raw) : [];
-      } catch(e) {
-        console.error('[Riwayat] Gagal parse JSON:', e);
-        riwayat = [];
-      }
-
-      console.log('[Riwayat] Jumlah transaksi:', riwayat.length);
+      } catch(e) { riwayat = []; }
 
       if (!Array.isArray(riwayat) || riwayat.length === 0) {
         box.innerHTML = `
@@ -211,39 +195,28 @@
 
       box.innerHTML = '';
       riwayat.forEach((tx, idx) => {
-        // Pastikan tx punya property yang diperlukan
-        if (!tx || typeof tx !== 'object') {
-          console.warn('[Riwayat] Data invalid di index', idx);
-          return;
-        }
-
+        if (!tx || typeof tx !== 'object') return;
         const tgl = tx.waktu ? new Date(tx.waktu).toLocaleString('id-ID', {
-          day:'2-digit', month:'short', year:'numeric',
-          hour:'2-digit', minute:'2-digit'
+          day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
         }) : '-';
-
         const items = Array.isArray(tx.items) ? tx.items : [];
         const itemSummary = items.map(i => (i.nama || 'Item') + ' (' + (i.qty || 1) + ')').join(', ');
-        const total = tx.total || 0;
-        const bayar = tx.bayar || 0;
-        const kembalian = tx.kembalian || 0;
 
         const el = document.createElement('div');
         el.className = 'tx-card';
         el.innerHTML = `
           <div class="tx-header">
             <span class="tx-tgl">${tgl}</span>
-            <span class="tx-total">${fmt(total)}</span>
+            <span class="tx-total">${fmt(tx.total || 0)}</span>
           </div>
           <div class="tx-items">${itemSummary || '-'}</div>
-          <div class="tx-kembalian">Bayar: ${fmt(bayar)} | Kembalian: ${fmt(kembalian)}</div>
+          <div class="tx-kembalian">Bayar: ${fmt(tx.bayar || 0)} | Kembalian: ${fmt(tx.kembalian || 0)}</div>
         `;
         el.onclick = () => previewRiwayat(tx);
         box.appendChild(el);
       });
     }
 
-    // ─── BUAT DUMMY TEST ───
     function buatDummy() {
       const dummy = [{
         items: [
@@ -260,7 +233,6 @@
       loadRiwayat();
     }
 
-    // ─── PREVIEW STRUK ───
     function previewRiwayat(tx) {
       const s = getS();
       let struk = '';
@@ -271,6 +243,9 @@
       struk += padCenter('STRUK TRANSAKSI', 32) + '\n';
       struk += lineGaris(32) + '\n';
       struk += padKiri('Tgl: ' + (tx.waktu ? new Date(tx.waktu).toLocaleString('id-ID') : '-'), 32) + '\n';
+      if (s.namaKasir) {
+        struk += padKiri('Kasir: ' + s.namaKasir, 32) + '\n';
+      }
       struk += lineGaris(32) + '\n';
 
       const items = Array.isArray(tx.items) ? tx.items : [];
@@ -342,7 +317,6 @@
       return '-'.repeat(width);
     }
 
-    // ─── INIT ───
     loadRiwayat();
     console.log('[Riwayat] Ready');
   </script>
