@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Setruk - Kasir</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="page-kasir">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <h1>🧾 Setruk</h1>
+    <button id="btn-ke-setting" class="btn-icon">⚙️</button>
+  </header>
+
+  <!-- INPUT MANUAL (Collapsed bisa, tapi ini expanded biar cepat) -->
+  <section class="panel manual-input">
+    <h3>Input Manual</h3>
+    <div class="form-row">
+      <input type="text" id="manual-nama" placeholder="Nama produk">
+      <input type="number" id="manual-harga" placeholder="Harga">
+      <input type="number" id="manual-qty" placeholder="Qty" value="1" min="1">
+    </div>
+    <button id="btn-tambah-manual" class="btn-primary btn-full">+ Tambah ke Keranjang</button>
+  </section>
+
+  <!-- LIST PRODUK (Scroll area) -->
+  <section class="panel produk-panel">
+    <h3>Pilih Produk</h3>
+    <div id="list-produk" class="grid-produk">
+      <!-- Diisi JS -->
+    </div>
+  </section>
+
+  <!-- KERANJANG (Fixed bottom / scrollable) -->
+  <section class="panel keranjang-panel">
+    <h3>Keranjang</h3>
+    <div id="keranjang-list" class="keranjang-list">
+      <!-- Diisi JS -->
+    </div>
+  </section>
+
+  <!-- FOOTER BAYAR (Fixed bottom) -->
+  <footer class="footer-bayar">
+    <div class="total-row">
+      <span>Total:</span>
+      <span id="total-belanja" class="total-harga">Rp 0</span>
+    </div>
+    <div class="bayar-row">
+      <input type="number" id="input-bayar" placeholder="Bayar (Rp)">
+      <span id="kembalian">Rp 0</span>
+    </div>
+    <div class="btn-row">
+      <button id="btn-bayar" class="btn-success btn-full">💰 BAYAR</button>
+      <button id="btn-print-ulang" class="btn-secondary">🖨 Print Ulang</button>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="js/app.js"></script>
+  <script src="js/kasir.js"></script>
+</body>
+</html>
