@@ -215,6 +215,23 @@ html, body {
   width: 22px; height: 22px;
 }
 
+/* ─── TAMBAH BARU ─── */
+.btn-uang-pas {
+  background: #fdcb6e;
+  color: #2d3436;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.btn-uang-pas:active {
+  transform: scale(0.95);
+  background: #f1c40f;
+}
+
 /* ─── TOAST ─── */
 .toast {
   position: fixed;
