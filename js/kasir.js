@@ -218,30 +218,57 @@ const KasirApp = {
   },
 
   // ─── Event listener global page kasir ───
-  bindEvents() {
-    document.getElementById('btn-tambah-manual').addEventListener('click', () => this.tambahManual());
-    document.getElementById('btn-bayar').addEventListener('click', () => this.bayar());
-    document.getElementById('btn-print-ulang').addEventListener('click', () => {
+    bindEvents() {
+    // Input manual
+    const btnManual = document.getElementById('btn-tambah-manual');
+    if (btnManual) {
+      btnManual.addEventListener('click', () => this.tambahManual());
+    }
 
-      // ─── TAMBAH INI ───
-    document.getElementById('btn-uang-pas').addEventListener('click', () => {
-      const total = this.updateTotal();
-      if (total <= 0) {
-        App.toast('Keranjang masih kosong');
-        return;
-      }
-      document.getElementById('input-bayar').value = total;
-      // Auto hitung kembalian = 0
-      document.getElementById('kembalian').textContent = 'Rp 0';
-      App.toast('✅ Uang pas: ' + App.formatRupiah(total));
-    });
-      
-      // Print ulang struk terakhir (simpan dulu ya kalau mau fitur ini)
-      App.toast('Print ulang: simpan transaksi terakhir dulu ke variabel');
-    });
-    document.getElementById('btn-ke-setting').addEventListener('click', () => App.goto('page-setting.html'));
+    // Bayar
+    const btnBayar = document.getElementById('btn-bayar');
+    if (btnBayar) {
+      btnBayar.addEventListener('click', () => this.bayar());
+    }
+
+    // Print ulang
+    const btnPrint = document.getElementById('btn-print-ulang');
+    if (btnPrint) {
+      btnPrint.addEventListener('click', () => {
+        App.toast('Print ulang: simpan transaksi terakhir dulu ke variabel');
+      });
+    }
+
+    // Ke setting
+    const btnSetting = document.getElementById('btn-ke-setting');
+    if (btnSetting) {
+      btnSetting.addEventListener('click', () => App.goto('page-setting.html'));
+    }
+
+    // ─── INI YANG PENTING: UANG PAS ───
+    const btnUangPas = document.getElementById('btn-uang-pas');
+    if (btnUangPas) {
+      btnUangPas.addEventListener('click', () => {
+        const total = this.updateTotal();
+        if (total <= 0) {
+          App.toast('Keranjang masih kosong');
+          return;
+        }
+        const inputBayar = document.getElementById('input-bayar');
+        if (inputBayar) {
+          inputBayar.value = total;
+        }
+        const elKembalian = document.getElementById('kembalian');
+        if (elKembalian) {
+          elKembalian.textContent = 'Rp 0';
+        }
+        App.toast('✅ Uang pas: ' + App.formatRupiah(total));
+      });
+      console.log('[Kasir] Uang Pas listener attached');
+    } else {
+      console.error('[Kasir] btn-uang-pas NOT FOUND!');
+    }
   }
-};
 
 // ─── Jalankan saat page load ───
 document.addEventListener('DOMContentLoaded', () => KasirApp.init());
