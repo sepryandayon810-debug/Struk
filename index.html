@@ -3,162 +3,477 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Setruk</title>
-  <link rel="stylesheet" href="css/app.css">
+  <title>KasiRin - Kasir</title>
   <style>
-    /* Style khusus index/launcher */
-    .launcher-body {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f6fa;
+      color: #2d3436;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #2d3436;
       color: #fff;
-      text-align: center;
-      padding: 20px;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .launcher-logo {
-      width: 100px;
-      height: 100px;
-      background: #00b894;
-      border-radius: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 32px rgba(0,184,148,0.3);
+    .header h1 { font-size: 1.1rem; }
+    .btn-icon {
+      background: transparent; border: none; color: #fff;
+      font-size: 1.3rem; padding: 4px; cursor: pointer;
     }
-    .launcher-title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 4px;
+
+    /* SCROLL AREA */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 8px;
+      padding-bottom: 10px;
     }
-    .launcher-subtitle {
+
+    /* PANEL */
+    .panel {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .panel h3 {
       font-size: 0.85rem;
-      color: #b2bec3;
-      margin-bottom: 40px;
+      color: #636e72;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .launcher-menu {
+
+    /* INPUT MANUAL */
+    .form-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .form-row input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #dfe6e9;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    .form-row input:first-child { flex: 2; }
+    .btn-full {
       width: 100%;
-      max-width: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .btn-launcher {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px 20px;
-      border-radius: 14px;
+      padding: 12px;
       border: none;
-      font-size: 1.1rem;
+      border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      color: inherit;
     }
-    .btn-launcher-kasir {
+    .btn-green {
       background: #00b894;
       color: #fff;
-      box-shadow: 0 4px 16px rgba(0,184,148,0.3);
     }
-    .btn-launcher-kasir:active {
-      transform: scale(0.97);
-      box-shadow: 0 2px 8px rgba(0,184,148,0.2);
+    .btn-green:active { background: #00a383; }
+
+    /* PRODUK GRID */
+    .grid-produk {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
     }
-    .btn-launcher-setting {
-      background: #2d3436;
-      color: #dfe6e9;
-      border: 1.5px solid #636e72;
-    }
-    .btn-launcher-setting:active {
-      transform: scale(0.97);
-      background: #353b48;
-    }
-    .launcher-icon {
-      font-size: 1.6rem;
-    }
-    .launcher-info {
-      margin-top: 30px;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 10px;
-      font-size: 0.75rem;
-      color: #b2bec3;
-      max-width: 320px;
-      width: 100%;
-    }
-    .launcher-info strong {
+    .card {
+      background: #74b9ff;
       color: #fff;
-      display: block;
-      margin-bottom: 4px;
-      font-size: 0.8rem;
-    }
-    .status-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-    .status-on { background: #00b894; }
-    .status-off { background: #ff7675; }
-    .first-run-box {
-      background: rgba(0,184,148,0.15);
-      border: 1px solid rgba(0,184,148,0.3);
-      border-radius: 12px;
       padding: 14px;
-      margin-bottom: 20px;
-      font-size: 0.85rem;
-      color: #dfe6e9;
-      max-width: 320px;
-      width: 100%;
-      display: none;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .card:active { transform: scale(0.96); }
+    .card-name { font-weight: 600; font-size: 0.95rem; }
+    .card-price { font-size: 0.85rem; opacity: 0.95; margin-top: 4px; }
+
+    /* KERANJANG */
+    .k-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f2f6;
+    }
+    .k-info { flex: 1; }
+    .k-name { font-weight: 600; font-size: 0.95rem; }
+    .k-price { font-size: 0.8rem; color: #636e72; }
+    .k-aksi { display: flex; align-items: center; gap: 4px; margin: 0 8px; }
+    .k-aksi button {
+      width: 32px; height: 32px;
+      border: 1px solid #b2bec3;
+      background: #fff;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .k-aksi .hapus {
+      background: #ff7675;
+      color: #fff;
+      border: none;
+    }
+    .k-qty { min-width: 24px; text-align: center; font-weight: 700; }
+    .k-sub { font-weight: 700; min-width: 90px; text-align: right; }
+
+    /* FOOTER BAYAR */
+    .footer {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      padding: 10px 12px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+      border-top: 1px solid #eee;
+      z-index: 99;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .total-red { color: #d63031; }
+    .bayar-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .bayar-row input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #dfe6e9;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    .btn-uang-pas {
+      background: #fdcb6e;
+      color: #2d3436;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .btn-uang-pas:active { transform: scale(0.95); background: #f1c40f; }
+    .btn-row { display: flex; gap: 8px; }
+    .btn-blue {
+      flex: 2;
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+    }
+    .btn-blue:active { background: #0770c2; }
+    .btn-gray {
+      flex: 1;
+      background: #dfe6e9;
+      color: #2d3436;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d3436;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      z-index: 999;
     }
   </style>
 </head>
-<body class="launcher-body">
+<body>
 
-  <!-- LOGO -->
-  <div class="launcher-logo">🧾</div>
-  <div class="launcher-title">Setruk</div>
-  <div class="launcher-subtitle">Point of Sale Android</div>
+  <header class="header">
+    <h1>🧾 Setruk</h1>
+    <button class="btn-icon" onclick="location.href='page-setting.html'">⚙️</button>
+  </header>
 
-  <!-- FIRST RUN NOTICE (muncul kalau belum pernah setting) -->
-  <div id="first-run" class="first-run-box">
-    ⚠️ <strong>Setup Pertama!</strong><br>
-    Silakan atur header struk & printer di menu Setting sebelum mulai jualan.
-  </div>
+  <div class="scroll-area">
 
-  <!-- MENU UTAMA -->
-  <div class="launcher-menu">
-    <button id="btn-go-kasir" class="btn-launcher btn-launcher-kasir">
-      <span class="launcher-icon">🛒</span>
-      <span>Menu Kasir</span>
-    </button>
-
-    <button id="btn-go-setting" class="btn-launcher btn-launcher-setting">
-      <span class="launcher-icon">⚙️</span>
-      <span>Pengaturan</span>
-    </button>
-  </div>
-
-  <!-- INFO TERKINI -->
-  <div class="launcher-info">
-    <strong>📍 Info Toko</strong>
-    <div id="info-nama-toko">Belum diatur</div>
-    <div style="margin-top:6px;">
-      <span id="status-printer-dot" class="status-dot status-off"></span>
-      <span id="status-printer-text">Printer belum terhubung</span>
+    <!-- INPUT MANUAL -->
+    <div class="panel">
+      <h3>Input Manual</h3>
+      <div class="form-row">
+        <input type="text" id="m-nama" placeholder="Nama produk">
+        <input type="number" id="m-harga" placeholder="Harga">
+        <input type="number" id="m-qty" placeholder="Qty" value="1" min="1">
+      </div>
+      <button class="btn-full btn-green" onclick="tambahManual()">+ Tambah ke Keranjang</button>
     </div>
+
+    <!-- PILIH PRODUK -->
+    <div class="panel">
+      <h3>Pilih Produk</h3>
+      <div id="list-produk" class="grid-produk"></div>
+    </div>
+
+    <!-- KERANJANG -->
+    <div class="panel">
+      <h3>Keranjang</h3>
+      <div id="keranjang-list"></div>
+    </div>
+
   </div>
 
-  <!-- JS -->
-  <script src="js/app.js"></script>
-  <script src="js/index.js"></script>
+  <!-- FOOTER BAYAR -->
+  <footer class="footer">
+    <div class="total-row">
+      <span>Total:</span>
+      <span id="total-belanja" class="total-red">Rp 0</span>
+    </div>
+    <div class="bayar-row">
+      <input type="number" id="input-bayar" placeholder="Bayar (Rp)">
+      <button id="btn-uang-pas" class="btn-uang-pas" onclick="uangPas()">Uang Pas</button>
+      <span id="kembalian">Rp 0</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn-blue" onclick="bayar()">💰 BAYAR</button>
+      <button class="btn-gray" onclick="printUlang()">🖨 Print</button>
+    </div>
+  </footer>
+
+  <script>
+    // ═══════════════════════════════════════
+    // KASIR LOGIC — SEMUA DI SINI
+    // ═══════════════════════════════════════
+
+    // ─── DATA PRODUK (ganti dengan Firebase kamu nanti) ───
+    const produkList = [
+      { id: 1, nama: 'Kopi Hitam', harga: 8000 },
+      { id: 2, nama: 'Teh Manis', harga: 5000 },
+      { id: 3, nama: 'Nasi Goreng', harga: 15000 },
+      { id: 4, nama: 'Mie Goreng', harga: 13000 },
+      { id: 5, nama: 'Air Mineral', harga: 4000 },
+    ];
+
+    let keranjang = [];
+    let transaksiTerakhir = null;
+
+    // ─── UTILITY ───
+    const fmt = (n) => 'Rp ' + parseInt(n||0).toLocaleString('id-ID');
+    const parseN = (s) => parseInt(String(s).replace(/[^0-9]/g,'')) || 0;
+    const getS = () => {
+      try {
+        return JSON.parse(localStorage.getItem('kasirin_setting')) || {
+          namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false
+        };
+      } catch(e) { return {namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false}; }
+    };
+    const toast = (msg) => {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    };
+
+    // ─── RENDER PRODUK LIST ───
+    function renderProduk() {
+      const box = document.getElementById('list-produk');
+      box.innerHTML = '';
+      produkList.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `<div class="card-name">${p.nama}</div><div class="card-price">${fmt(p.harga)}</div>`;
+        el.onclick = () => tambahKeKeranjang(p);
+        box.appendChild(el);
+      });
+    }
+
+    // ─── TAMBAH DARI LIST ───
+    function tambahKeKeranjang(produk, qty = 1) {
+      const ada = keranjang.find(i => i.id === produk.id);
+      if (ada) { ada.qty += qty; }
+      else { keranjang.push({ ...produk, qty }); }
+      renderKeranjang();
+      toast(`+ ${produk.nama}`);
+    }
+
+    // ─── TAMBAH MANUAL ───
+    function tambahManual() {
+      const nama = document.getElementById('m-nama').value.trim();
+      const harga = parseN(document.getElementById('m-harga').value);
+      const qty = parseInt(document.getElementById('m-qty').value) || 1;
+
+      if (!nama || harga <= 0) { toast('Nama & harga wajib diisi'); return; }
+
+      keranjang.push({
+        id: 'manual-' + Date.now(),
+        nama: nama,
+        harga: harga,
+        qty: qty
+      });
+
+      renderKeranjang();
+      document.getElementById('m-nama').value = '';
+      document.getElementById('m-harga').value = '';
+      document.getElementById('m-qty').value = '1';
+    }
+
+    // ─── RENDER KERANJANG ───
+    function renderKeranjang() {
+      const box = document.getElementById('keranjang-list');
+      box.innerHTML = '';
+      keranjang.forEach((item, idx) => {
+        const sub = item.harga * item.qty;
+        const el = document.createElement('div');
+        el.className = 'k-item';
+        el.innerHTML = `
+          <div class="k-info">
+            <div class="k-name">${item.nama}</div>
+            <div class="k-price">${fmt(item.harga)} x ${item.qty}</div>
+          </div>
+          <div class="k-aksi">
+            <button onclick="qtyPlusMinus(${idx}, -1)">−</button>
+            <span class="k-qty">${item.qty}</span>
+            <button onclick="qtyPlusMinus(${idx}, 1)">+</button>
+            <button class="hapus" onclick="hapusItem(${idx})">🗑</button>
+          </div>
+          <div class="k-sub">${fmt(sub)}</div>
+        `;
+        box.appendChild(el);
+      });
+      updateTotal();
+    }
+
+    // ─── QTY + / - ───
+    function qtyPlusMinus(idx, delta) {
+      keranjang[idx].qty += delta;
+      if (keranjang[idx].qty <= 0) keranjang.splice(idx, 1);
+      renderKeranjang();
+    }
+
+    // ─── HAPUS ITEM ───
+    function hapusItem(idx) {
+      keranjang.splice(idx, 1);
+      renderKeranjang();
+    }
+
+    // ─── UPDATE TOTAL ───
+    function updateTotal() {
+      const total = keranjang.reduce((sum, i) => sum + (i.harga * i.qty), 0);
+      document.getElementById('total-belanja').textContent = fmt(total);
+      return total;
+    }
+
+    // ─── UANG PAS ───
+    function uangPas() {
+      const total = updateTotal();
+      if (total <= 0) { toast('Keranjang masih kosong'); return; }
+      document.getElementById('input-bayar').value = total;
+      document.getElementById('kembalian').textContent = 'Rp 0';
+      toast('✅ Uang pas: ' + fmt(total));
+    }
+
+    // ─── BAYAR ───
+    function bayar() {
+      const total = updateTotal();
+      if (total <= 0) { toast('Keranjang masih kosong'); return; }
+
+      const bayarInput = parseN(document.getElementById('input-bayar').value);
+      if (bayarInput < total) { toast('Uang bayar kurang!'); return; }
+
+      const kembalian = bayarInput - total;
+      document.getElementById('kembalian').textContent = fmt(kembalian);
+
+      transaksiTerakhir = {
+        items: [...keranjang],
+        total, bayar: bayarInput, kembalian,
+        waktu: new Date().toISOString()
+      };
+
+      const setting = getS();
+      if (setting.autoPrint) printStruk(transaksiTerakhir);
+
+      toast('✅ Transaksi sukses!');
+      resetKasir();
+    }
+
+    // ─── PRINT STRUK ───
+    function printStruk(tx) {
+      const s = getS();
+      let struk = '';
+      struk += s.namaToko + '\n';
+      if (s.alamat) struk += s.alamat + '\n';
+      if (s.telepon) struk += 'Telp: ' + s.telepon + '\n';
+      struk += '----------------\n';
+      struk += 'Struk Transaksi\n';
+      struk += '----------------\n';
+
+      tx.items.forEach(i => {
+        struk += `${i.nama}\n`;
+        struk += `${i.qty} x ${fmt(i.harga)} = ${fmt(i.harga * i.qty)}\n`;
+      });
+
+      struk += '----------------\n';
+      struk += `TOTAL: ${fmt(tx.total)}\n`;
+      struk += `BAYAR: ${fmt(tx.bayar)}\n`;
+      struk += `KEMBALI: ${fmt(tx.kembalian)}\n`;
+      struk += '----------------\n';
+      struk += s.footer + '\n\n\n';
+
+      // Kirim ke Android native bridge
+      if (window.AndroidBridge && window.AndroidBridge.printStruk) {
+        window.AndroidBridge.printStruk(struk, s.printerMAC);
+      } else if (window.Capacitor && window.Capacitor.Plugins?.BluetoothPrinter) {
+        window.Capacitor.Plugins.BluetoothPrinter.print({ mac: s.printerMAC, data: struk });
+      } else {
+        alert('Printer belum terhubung.\n\nPreview struk:\n' + struk);
+      }
+    }
+
+    // ─── PRINT ULANG ───
+    function printUlang() {
+      if (!transaksiTerakhir) { toast('Belum ada transaksi'); return; }
+      printStruk(transaksiTerakhir);
+    }
+
+    // ─── RESET ───
+    function resetKasir() {
+      keranjang = [];
+      renderKeranjang();
+      document.getElementById('input-bayar').value = '';
+      document.getElementById('kembalian').textContent = 'Rp 0';
+    }
+
+    // ─── INIT ───
+    renderProduk();
+    renderKeranjang();
+    console.log('[Kasir] Ready');
+  </script>
+
 </body>
 </html>
