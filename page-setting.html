@@ -12,8 +12,6 @@
       color: #2d3436;
       min-height: 100vh;
     }
-
-    /* HEADER */
     .header {
       display: flex;
       align-items: center;
@@ -30,14 +28,10 @@
       background: transparent; border: none; color: #fff;
       font-size: 1.3rem; cursor: pointer;
     }
-
-    /* CONTAINER */
     .container {
       padding: 10px;
       padding-bottom: 40px;
     }
-
-    /* GROUP */
     .group {
       background: #fff;
       margin-bottom: 12px;
@@ -75,8 +69,6 @@
     .toggle-row input[type="checkbox"] {
       width: 22px; height: 22px;
     }
-
-    /* BUTTONS */
     .btn-full {
       width: 100%;
       padding: 12px;
@@ -97,8 +89,6 @@
       color: #2d3436;
     }
     .btn-secondary:active { background: #b2bec3; }
-
-    /* TOAST */
     .toast {
       position: fixed;
       bottom: 40px;
@@ -139,9 +129,7 @@
 
       <label>Nama Kasir</label>
       <input type="text" id="s-kasir" placeholder="Nama Kasir (contoh: Oktania)">
-      
     </div>
-    
 
     <!-- PRINTER -->
     <div class="group">
@@ -165,18 +153,13 @@
   </main>
 
   <script>
-    // ═══════════════════════════════════════
-    // SETTING LOGIC — SEMUA DI SINI
-    // ═══════════════════════════════════════
-
-    // ─── UTILITY ───
     const fmt = (n) => 'Rp ' + parseInt(n||0).toLocaleString('id-ID');
     const getS = () => {
       try {
         return JSON.parse(localStorage.getItem('kasirin_setting')) || {
-          namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false
+          namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', namaKasir:'', printerMAC:'', autoPrint:false
         };
-      } catch(e) { return {namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false}; }
+      } catch(e) { return {namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', namaKasir:'', printerMAC:'', autoPrint:false}; }
     };
     const saveS = (data) => localStorage.setItem('kasirin_setting', JSON.stringify(data));
     const toast = (msg) => {
@@ -187,7 +170,6 @@
       setTimeout(() => el.remove(), 2500);
     };
 
-    // ─── LOAD FORM ───
     function loadForm() {
       const s = getS();
       document.getElementById('s-nama').value = s.namaToko || '';
@@ -199,7 +181,6 @@
       document.getElementById('s-autoprint').checked = !!s.autoPrint;
     }
 
-    // ─── SIMPAN ───
     function simpan() {
       const data = {
         namaToko: document.getElementById('s-nama').value.trim(),
@@ -214,19 +195,18 @@
       toast('✅ Pengaturan tersimpan');
     }
 
-    // ─── TEST PRINT ───
     function testPrint() {
       const s = getS();
       const dummy = [
         s.namaToko,
         s.alamat,
-        namaKasir: ''
+        s.namaKasir ? 'Kasir: ' + s.namaKasir : '',
         '----------------',
         'TEST PRINT OK',
         'Printer siap pakai',
         '----------------',
         s.footer
-      ].join('\n');
+      ].filter(Boolean).join('\n');
 
       if (window.AndroidBridge && window.AndroidBridge.printStruk) {
         window.AndroidBridge.printStruk(dummy, s.printerMAC);
@@ -237,7 +217,6 @@
       }
     }
 
-    // ─── SCAN PRINTER ───
     function scanPrinter() {
       if (window.AndroidBridge && window.AndroidBridge.scanPrinter) {
         window.AndroidBridge.scanPrinter();
@@ -248,7 +227,6 @@
       }
     }
 
-    // ─── INIT ───
     loadForm();
     console.log('[Setting] Ready');
   </script>
