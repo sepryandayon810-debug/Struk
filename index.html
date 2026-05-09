@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Setruk</title>
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    /* Style khusus index/launcher */
+    .launcher-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    .launcher-logo {
+      width: 100px;
+      height: 100px;
+      background: #00b894;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px rgba(0,184,148,0.3);
+    }
+    .launcher-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .launcher-subtitle {
+      font-size: 0.85rem;
+      color: #b2bec3;
+      margin-bottom: 40px;
+    }
+    .launcher-menu {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .btn-launcher {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .btn-launcher-kasir {
+      background: #00b894;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,184,148,0.3);
+    }
+    .btn-launcher-kasir:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px rgba(0,184,148,0.2);
+    }
+    .btn-launcher-setting {
+      background: #2d3436;
+      color: #dfe6e9;
+      border: 1.5px solid #636e72;
+    }
+    .btn-launcher-setting:active {
+      transform: scale(0.97);
+      background: #353b48;
+    }
+    .launcher-icon {
+      font-size: 1.6rem;
+    }
+    .launcher-info {
+      margin-top: 30px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px;
+      font-size: 0.75rem;
+      color: #b2bec3;
+      max-width: 320px;
+      width: 100%;
+    }
+    .launcher-info strong {
+      color: #fff;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .status-on { background: #00b894; }
+    .status-off { background: #ff7675; }
+    .first-run-box {
+      background: rgba(0,184,148,0.15);
+      border: 1px solid rgba(0,184,148,0.3);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: #dfe6e9;
+      max-width: 320px;
+      width: 100%;
+      display: none;
+    }
+  </style>
+</head>
+<body class="launcher-body">
+
+  <!-- LOGO -->
+  <div class="launcher-logo">🧾</div>
+  <div class="launcher-title">Setruk</div>
+  <div class="launcher-subtitle">Point of Sale Android</div>
+
+  <!-- FIRST RUN NOTICE (muncul kalau belum pernah setting) -->
+  <div id="first-run" class="first-run-box">
+    ⚠️ <strong>Setup Pertama!</strong><br>
+    Silakan atur header struk & printer di menu Setting sebelum mulai jualan.
+  </div>
+
+  <!-- MENU UTAMA -->
+  <div class="launcher-menu">
+    <button id="btn-go-kasir" class="btn-launcher btn-launcher-kasir">
+      <span class="launcher-icon">🛒</span>
+      <span>Menu Kasir</span>
+    </button>
+
+    <button id="btn-go-setting" class="btn-launcher btn-launcher-setting">
+      <span class="launcher-icon">⚙️</span>
+      <span>Pengaturan</span>
+    </button>
+  </div>
+
+  <!-- INFO TERKINI -->
+  <div class="launcher-info">
+    <strong>📍 Info Toko</strong>
+    <div id="info-nama-toko">Belum diatur</div>
+    <div style="margin-top:6px;">
+      <span id="status-printer-dot" class="status-dot status-off"></span>
+      <span id="status-printer-text">Printer belum terhubung</span>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="js/app.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>
