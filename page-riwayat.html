@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Setruk - Riwayat</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f6fa;
+      color: #2d3436;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #2d3436;
+      color: #fff;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 { font-size: 1.1rem; }
+    .btn-icon {
+      background: transparent; border: none; color: #fff;
+      font-size: 1.3rem; cursor: pointer;
+    }
+
+    /* LIST */
+    .container {
+      padding: 10px;
+      padding-bottom: 40px;
+    }
+    .tx-card {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      cursor: pointer;
+    }
+    .tx-card:active { transform: scale(0.98); }
+    .tx-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .tx-tgl {
+      font-size: 0.8rem;
+      color: #636e72;
+    }
+    .tx-total {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0984e3;
+    }
+    .tx-items {
+      font-size: 0.85rem;
+      color: #636e72;
+      margin-bottom: 8px;
+    }
+    .tx-kembalian {
+      font-size: 0.8rem;
+      color: #00b894;
+    }
+    .tx-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #b2bec3;
+    }
+    .tx-empty-icon { font-size: 3rem; margin-bottom: 12px; }
+
+    /* MODAL STRUK */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 8px;
+      max-width: 340px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 1rem; }
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #636e72;
+    }
+    .struk-preview {
+      padding: 20px;
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: #000;
+      background: #fff;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .modal-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 8px;
+    }
+    .modal-footer button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .btn-ok { background: #0984e3; color: #fff; }
+    .btn-print-modal {
+      background: #00b894;
+      color: #fff;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d3436;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <button class="btn-icon" onclick="location.href='page-kasir.html'">←</button>
+    <h1>📋 Riwayat Transaksi</h1>
+  </header>
+
+  <div class="container" id="list-riwayat">
+    <!-- Diisi JS -->
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════
+    // RIWAYAT LOGIC
+    // ═══════════════════════════════════════
+
+    const fmt = (n) => 'Rp ' + parseInt(n||0).toLocaleString('id-ID');
+    const getS = () => {
+      try {
+        return JSON.parse(localStorage.getItem('kasirin_setting')) || {
+          namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false
+        };
+      } catch(e) { return {namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false}; }
+    };
+    const toast = (msg) => {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    };
+
+    // ─── LOAD RIWAYAT ───
+    function loadRiwayat() {
+      let riwayat = [];
+      try {
+        riwayat = JSON.parse(localStorage.getItem('kasirin_riwayat')) || [];
+      } catch(e) { riwayat = []; }
+
+      const box = document.getElementById('list-riwayat');
+
+      if (riwayat.length === 0) {
+        box.innerHTML = `
+          <div class="tx-empty">
+            <div class="tx-empty-icon">📭</div>
+            <div>Belum ada transaksi</div>
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = '';
+      riwayat.forEach((tx, idx) => {
+        const tgl = new Date(tx.waktu).toLocaleString('id-ID', {
+          day:'2-digit', month:'short', year:'numeric',
+          hour:'2-digit', minute:'2-digit'
+        });
+        const itemSummary = tx.items.map(i => i.nama + ' (' + i.qty + ')').join(', ');
+
+        const el = document.createElement('div');
+        el.className = 'tx-card';
+        el.innerHTML = `
+          <div class="tx-header">
+            <span class="tx-tgl">${tgl}</span>
+            <span class="tx-total">${fmt(tx.total)}</span>
+          </div>
+          <div class="tx-items">${itemSummary}</div>
+          <div class="tx-kembalian">Kembalian: ${fmt(tx.kembalian)}</div>
+        `;
+        el.onclick = () => previewRiwayat(tx);
+        box.appendChild(el);
+      });
+    }
+
+    // ─── PREVIEW STRUK DARI RIWAYAT ───
+    function previewRiwayat(tx) {
+      const s = getS();
+
+      let struk = '';
+      struk += padCenter(s.namaToko, 32) + '\n';
+      if (s.alamat) struk += padCenter(s.alamat, 32) + '\n';
+      if (s.telepon) struk += padCenter('Telp: ' + s.telepon, 32) + '\n';
+      struk += lineGaris(32) + '\n';
+      struk += padCenter('STRUK TRANSAKSI', 32) + '\n';
+      struk += lineGaris(32) + '\n';
+      struk += padKiri('Tgl: ' + new Date(tx.waktu).toLocaleString('id-ID'), 32) + '\n';
+      struk += lineGaris(32) + '\n';
+
+      tx.items.forEach(i => {
+        struk += padKiri(i.nama, 32) + '\n';
+        struk += padKanan(i.qty + ' x ' + fmt(i.harga), 16) + padKanan(fmt(i.harga * i.qty), 16) + '\n';
+      });
+
+      struk += lineGaris(32) + '\n';
+      struk += padKiri('TOTAL', 16) + padKanan(fmt(tx.total), 16) + '\n';
+      struk += padKiri('BAYAR', 16) + padKanan(fmt(tx.bayar), 16) + '\n';
+      struk += padKiri('KEMBALI', 16) + padKanan(fmt(tx.kembalian), 16) + '\n';
+      struk += lineGaris(32) + '\n';
+      struk += padCenter(s.footer, 32) + '\n';
+      struk += '\n\n\n';
+
+      // Tampilkan modal
+      const lama = document.getElementById('modal-struk');
+      if (lama) lama.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'modal-struk';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3>🖨 Struk Transaksi</h3>
+            <button class="btn-close" onclick="tutupModal()">✕</button>
+          </div>
+          
