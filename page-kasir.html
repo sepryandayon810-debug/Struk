@@ -549,17 +549,22 @@
     }
 
     function printDariModal() {
-      if (window.AndroidBridge && window.AndroidBridge.printStruk) {
-        window.AndroidBridge.printStruk(window.__strukData, getS().printerMAC);
-      } else if (window.Capacitor?.Plugins?.BluetoothPrinter) {
-        window.Capacitor.Plugins.BluetoothPrinter.print({ mac: getS().printerMAC, data: window.__strukData });
-      } else {
-        const w = window.open('', '_blank');
-        w.document.write('<pre style="font-family:Courier New;font-size:12px">' + window.__strukData + '</pre>');
-        w.document.close();
-        w.print();
-      }
+  if (window.AndroidBridge && window.AndroidBridge.printStruk) {
+    const s = getS();
+    window.AndroidBridge.printStruk(window.__strukData, s.printerMAC);
+  } else {
+    // Fallback: Print dialog (tidak buka Chrome!)
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write('<pre style="font-family:Courier New;font-size:12px">' + window.__strukData + '</pre>');
+      w.document.close();
+      w.focus();
+      w.print();
+    } else {
+      alert('Popup diblokir. Izinkan popup untuk print.');
     }
+  }
+}
 
     function tutupPreview() {
       const modal = document.getElementById('modal-struk');
