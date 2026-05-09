@@ -4,55 +4,246 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Setruk - Setting</title>
-  <link rel="stylesheet" href="css/app.css">
-</head>
-<body class="page-setting">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f6fa;
+      color: #2d3436;
+      min-height: 100vh;
+    }
 
-  <header class="app-header">
-    <button id="btn-kembali-kasir" class="btn-icon">←</button>
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #2d3436;
+      color: #fff;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 { font-size: 1.1rem; }
+    .btn-icon {
+      background: transparent; border: none; color: #fff;
+      font-size: 1.3rem; cursor: pointer;
+    }
+
+    /* CONTAINER */
+    .container {
+      padding: 10px;
+      padding-bottom: 40px;
+    }
+
+    /* GROUP */
+    .group {
+      background: #fff;
+      margin-bottom: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .group h3 {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      color: #2d3436;
+    }
+    .group label {
+      display: block;
+      font-size: 0.8rem;
+      color: #636e72;
+      margin: 10px 0 4px;
+    }
+    .group input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dfe6e9;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #f1f2f6;
+    }
+    .toggle-row input[type="checkbox"] {
+      width: 22px; height: 22px;
+    }
+
+    /* BUTTONS */
+    .btn-full {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+    .btn-primary {
+      background: #00b894;
+      color: #fff;
+    }
+    .btn-primary:active { background: #00a383; }
+    .btn-secondary {
+      background: #dfe6e9;
+      color: #2d3436;
+    }
+    .btn-secondary:active { background: #b2bec3; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d3436;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <button class="btn-icon" onclick="location.href='index.html'">←</button>
     <h1>⚙️ Pengaturan</h1>
   </header>
 
-  <main class="setting-container">
+  <main class="container">
 
     <!-- HEADER STRUK -->
-    <section class="setting-group">
+    <div class="group">
       <h3>Header Struk</h3>
       <label>Nama Toko</label>
-      <input type="text" id="inp-nama-toko" placeholder="Nama Toko Anda">
+      <input type="text" id="s-nama" placeholder="Nama Toko Anda">
 
       <label>Alamat</label>
-      <input type="text" id="inp-alamat" placeholder="Jl. Mawar No. 1">
+      <input type="text" id="s-alamat" placeholder="Jl. Mawar No. 1">
 
       <label>Telepon / WA</label>
-      <input type="text" id="inp-telepon" placeholder="0812xxxx">
+      <input type="text" id="s-telepon" placeholder="0812xxxx">
 
       <label>Footer Struk</label>
-      <input type="text" id="inp-footer" placeholder="Terima Kasih">
-    </section>
+      <input type="text" id="s-footer" placeholder="Terima Kasih">
+    </div>
 
     <!-- PRINTER -->
-    <section class="setting-group">
+    <div class="group">
       <h3>Printer Bluetooth</h3>
       <label>MAC Address Printer</label>
-      <input type="text" id="inp-printer-mac" placeholder="00:11:22:33:44:55">
-      <button id="btn-scan-printer" class="btn-secondary btn-full">🔍 Scan Printer</button>
+      <input type="text" id="s-mac" placeholder="00:11:22:33:44:55">
+      <button class="btn-full btn-secondary" onclick="scanPrinter()">🔍 Scan Printer</button>
 
       <div class="toggle-row">
         <label>Auto Print setelah Bayar</label>
-        <input type="checkbox" id="inp-auto-print">
+        <input type="checkbox" id="s-autoprint">
       </div>
-    </section>
+    </div>
 
     <!-- AKSI -->
-    <section class="setting-group aksi">
-      <button id="btn-test-print" class="btn-secondary btn-full">🖨 Test Print</button>
-      <button id="btn-simpan-setting" class="btn-primary btn-full">💾 Simpan Pengaturan</button>
-    </section>
+    <div class="group">
+      <button class="btn-full btn-secondary" onclick="testPrint()">🖨 Test Print</button>
+      <button class="btn-full btn-primary" onclick="simpan()">💾 Simpan Pengaturan</button>
+    </div>
 
   </main>
 
-  <script src="js/app.js"></script>
-  <script src="js/setting.js"></script>
+  <script>
+    // ═══════════════════════════════════════
+    // SETTING LOGIC — SEMUA DI SINI
+    // ═══════════════════════════════════════
+
+    // ─── UTILITY ───
+    const fmt = (n) => 'Rp ' + parseInt(n||0).toLocaleString('id-ID');
+    const getS = () => {
+      try {
+        return JSON.parse(localStorage.getItem('kasirin_setting')) || {
+          namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false
+        };
+      } catch(e) { return {namaToko:'KasiRin POS', alamat:'', telepon:'', footer:'Terima Kasih', printerMAC:'', autoPrint:false}; }
+    };
+    const saveS = (data) => localStorage.setItem('kasirin_setting', JSON.stringify(data));
+    const toast = (msg) => {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    };
+
+    // ─── LOAD FORM ───
+    function loadForm() {
+      const s = getS();
+      document.getElementById('s-nama').value = s.namaToko || '';
+      document.getElementById('s-alamat').value = s.alamat || '';
+      document.getElementById('s-telepon').value = s.telepon || '';
+      document.getElementById('s-footer').value = s.footer || '';
+      document.getElementById('s-mac').value = s.printerMAC || '';
+      document.getElementById('s-autoprint').checked = !!s.autoPrint;
+    }
+
+    // ─── SIMPAN ───
+    function simpan() {
+      const data = {
+        namaToko: document.getElementById('s-nama').value.trim(),
+        alamat: document.getElementById('s-alamat').value.trim(),
+        telepon: document.getElementById('s-telepon').value.trim(),
+        footer: document.getElementById('s-footer').value.trim(),
+        printerMAC: document.getElementById('s-mac').value.trim(),
+        autoPrint: document.getElementById('s-autoprint').checked
+      };
+      saveS(data);
+      toast('✅ Pengaturan tersimpan');
+    }
+
+    // ─── TEST PRINT ───
+    function testPrint() {
+      const s = getS();
+      const dummy = [
+        s.namaToko,
+        s.alamat,
+        '----------------',
+        'TEST PRINT OK',
+        'Printer siap pakai',
+        '----------------',
+        s.footer
+      ].join('\n');
+
+      if (window.AndroidBridge && window.AndroidBridge.printStruk) {
+        window.AndroidBridge.printStruk(dummy, s.printerMAC);
+      } else if (window.Capacitor && window.Capacitor.Plugins?.BluetoothPrinter) {
+        window.Capacitor.Plugins.BluetoothPrinter.print({ mac: s.printerMAC, data: dummy });
+      } else {
+        alert('Printer belum terhubung.\n\nPreview:\n' + dummy);
+      }
+    }
+
+    // ─── SCAN PRINTER ───
+    function scanPrinter() {
+      if (window.AndroidBridge && window.AndroidBridge.scanPrinter) {
+        window.AndroidBridge.scanPrinter();
+      } else if (window.Capacitor?.Plugins?.BluetoothPrinter?.scan) {
+        window.Capacitor.Plugins.BluetoothPrinter.scan();
+      } else {
+        toast('Scan printer via Android Settings > Bluetooth');
+      }
+    }
+
+    // ─── INIT ───
+    loadForm();
+    console.log('[Setting] Ready');
+  </script>
+
 </body>
 </html>
