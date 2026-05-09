@@ -136,7 +136,12 @@
 
       <label>Footer Struk</label>
       <input type="text" id="s-footer" placeholder="Terima Kasih">
+
+      <label>Nama Kasir</label>
+      <input type="text" id="s-kasir" placeholder="Nama Kasir (contoh: Oktania)">
+      
     </div>
+    
 
     <!-- PRINTER -->
     <div class="group">
@@ -187,6 +192,7 @@
       const s = getS();
       document.getElementById('s-nama').value = s.namaToko || '';
       document.getElementById('s-alamat').value = s.alamat || '';
+      document.getElementById('s-kasir').value = s.namaKasir || '';
       document.getElementById('s-telepon').value = s.telepon || '';
       document.getElementById('s-footer').value = s.footer || '';
       document.getElementById('s-mac').value = s.printerMAC || '';
@@ -198,6 +204,7 @@
       const data = {
         namaToko: document.getElementById('s-nama').value.trim(),
         alamat: document.getElementById('s-alamat').value.trim(),
+        namaKasir: document.getElementById('s-kasir').value.trim(),
         telepon: document.getElementById('s-telepon').value.trim(),
         footer: document.getElementById('s-footer').value.trim(),
         printerMAC: document.getElementById('s-mac').value.trim(),
@@ -213,6 +220,7 @@
       const dummy = [
         s.namaToko,
         s.alamat,
+        namaKasir: ''
         '----------------',
         'TEST PRINT OK',
         'Printer siap pakai',
