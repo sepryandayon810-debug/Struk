@@ -212,6 +212,69 @@
       font-size: 0.9rem;
       z-index: 999;
     }
+
+    /* ─── MODAL PREVIEW STRUK ─── */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 4px;
+      max-width: 320px;
+      width: 100%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 1rem; }
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #636e72;
+    }
+    .struk-preview {
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #000;
+      background: #fff;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      text-align: center;
+    }
+    .modal-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 8px;
+    }
+    .modal-footer button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-ok { background: #0984e3; color: #fff; }
+    .btn-ok:active { background: #0770c2; }
   </style>
 </head>
 <body>
@@ -422,38 +485,87 @@
       resetKasir();
     }
 
+    // ═══════════════════════════════════════════════════════
+    // ⬇️⬇️⬇️ INI BAGIAN YANG SUDAH DIPERBAIKI ⬇️⬇️⬇️
+    // ═══════════════════════════════════════════════════════
+
     // ─── PRINT STRUK ───
     function printStruk(tx) {
       const s = getS();
+
+      // Format struk kertas kecil (font struk thermal)
       let struk = '';
-      struk += s.namaToko + '\n';
-      if (s.alamat) struk += s.alamat + '\n';
-      if (s.telepon) struk += 'Telp: ' + s.telepon + '\n';
-      struk += '----------------\n';
-      struk += 'Struk Transaksi\n';
-      struk += '----------------\n';
+      struk += '      ' + s.namaToko + '\n';
+      if (s.alamat) struk += '  ' + s.alamat + '\n';
+      if (s.telepon) struk += '  Telp: ' + s.telepon + '\n';
+      struk += '--------------------------------\n';
+      struk += '      STRUK TRANSAKSI\n';
+      struk += '--------------------------------\n';
+      struk += 'Tgl: ' + new Date().toLocaleString('id-ID') + '\n';
+      struk += '--------------------------------\n';
 
       tx.items.forEach(i => {
-        struk += `${i.nama}\n`;
-        struk += `${i.qty} x ${fmt(i.harga)} = ${fmt(i.harga * i.qty)}\n`;
+        struk += i.nama + '\n';
+        struk += '  ' + i.qty + ' x ' + fmt(i.harga) + ' = ' + fmt(i.harga * i.qty) + '\n';
       });
 
-      struk += '----------------\n';
-      struk += `TOTAL: ${fmt(tx.total)}\n`;
-      struk += `BAYAR: ${fmt(tx.bayar)}\n`;
-      struk += `KEMBALI: ${fmt(tx.kembalian)}\n`;
-      struk += '----------------\n';
-      struk += s.footer + '\n\n\n';
+      struk += '--------------------------------\n';
+      struk += 'TOTAL    : ' + fmt(tx.total) + '\n';
+      struk += 'BAYAR    : ' + fmt(tx.bayar) + '\n';
+      struk += 'KEMBALI  : ' + fmt(tx.kembalian) + '\n';
+      struk += '--------------------------------\n';
+      struk += '    ' + s.footer + '\n';
+      struk += '       Terima Kasih\n';
+      struk += '\n\n\n'; // Feed kertas
 
-      // Kirim ke Android native bridge
+      // ─── KIRIM KE ANDROID NATIVE ───
       if (window.AndroidBridge && window.AndroidBridge.printStruk) {
         window.AndroidBridge.printStruk(struk, s.printerMAC);
-      } else if (window.Capacitor && window.Capacitor.Plugins?.BluetoothPrinter) {
-        window.Capacitor.Plugins.BluetoothPrinter.print({ mac: s.printerMAC, data: struk });
-      } else {
-        alert('Printer belum terhubung.\n\nPreview struk:\n' + struk);
+        return; // Langsung print, tidak muncul preview
       }
+
+      if (window.Capacitor && window.Capacitor.Plugins?.BluetoothPrinter) {
+        window.Capacitor.Plugins.BluetoothPrinter.print({ mac: s.printerMAC, data: struk });
+        return; // Langsung print, tidak muncul preview
+      }
+
+      // ─── FALLBACK: PREVIEW MODAL DI BROWSER ───
+      tampilPreviewStruk(struk);
     }
+
+    // ─── TAMPILKAN PREVIEW STRUK (Modal) ───
+    function tampilPreviewStruk(strukText) {
+      // Hapus modal lama kalau ada
+      const lama = document.getElementById('modal-struk');
+      if (lama) lama.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'modal-struk';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3>🖨 Preview Struk</h3>
+            <button class="btn-close" onclick="tutupPreview()">✕</button>
+          </div>
+          <div class="struk-preview">${strukText.replace(/\n/g, '<br>')}</div>
+          <div class="modal-footer">
+            <button class="btn-ok" onclick="tutupPreview()">OK / Tutup</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    // ─── TUTUP PREVIEW ───
+    function tutupPreview() {
+      const modal = document.getElementById('modal-struk');
+      if (modal) modal.remove();
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // ⬆️⬆️⬆️ SAMPAI SINI PERBAIKANNYA ⬆️⬆️⬆️
+    // ═══════════════════════════════════════════════════════
 
     // ─── PRINT ULANG ───
     function printUlang() {
