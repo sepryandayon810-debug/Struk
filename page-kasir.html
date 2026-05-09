@@ -521,15 +521,24 @@
       const s = getS();
 
       // Format struk rapi (alignment kiri/kanan pakai spasi)
-      let struk = '';
-      struk += padCenter(s.namaToko, 32) + '\n';
-      if (s.alamat) struk += padCenter(s.alamat, 32) + '\n';
-      if (s.telepon) struk += padCenter('Telp: ' + s.telepon, 32) + '\n';
-      struk += lineGaris(32) + '\n';
-      struk += padCenter('STRUK TRANSAKSI', 32) + '\n';
-      struk += lineGaris(32) + '\n';
-      struk += padKiri('Tgl: ' + new Date().toLocaleString('id-ID'), 32) + '\n';
-      struk += lineGaris(32) + '\n';
+      function printStruk(tx) {
+  const s = getS();
+
+  let struk = '';
+  struk += padCenter(s.namaToko, 32) + '\n';
+  if (s.alamat) struk += padCenter(s.alamat, 32) + '\n';
+  if (s.telepon) struk += padCenter('Telp: ' + s.telepon, 32) + '\n';
+  struk += lineGaris(32) + '\n';
+  struk += padCenter('STRUK TRANSAKSI', 32) + '\n';
+  struk += lineGaris(32) + '\n';
+  struk += padKiri('Tgl: ' + new Date().toLocaleString('id-ID'), 32) + '\n';
+  
+  // ⬇️ TAMBAH INI: Nama Kasir
+  if (s.namaKasir) {
+    struk += padKiri('Kasir: ' + s.namaKasir, 32) + '\n';
+  }
+  
+  struk += lineGaris(32) + '\n';
 
       tx.items.forEach(i => {
         struk += padKiri(i.nama, 32) + '\n';
