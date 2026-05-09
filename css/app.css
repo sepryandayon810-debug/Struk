@@ -5,7 +5,6 @@ html, body {
   background: #f5f6fa;
   color: #2d3436;
   height: 100%;
-  overflow: hidden; /* Capacitor WebView feel */
 }
 
 /* ─── HEADER ─── */
@@ -145,7 +144,7 @@ html, body {
 
 /* ─── FOOTER BAYAR (Fixed) ─── */
 .footer-bayar {
-  position: fixed;
+  position: sticky;
   bottom: 0; left: 0; right: 0;
   background: #fff;
   padding: 12px 16px;
@@ -230,6 +229,19 @@ html, body {
 .btn-uang-pas:active {
   transform: scale(0.95);
   background: #f1c40f;
+}
+
+/* ─── FIX SCROLL LAYOUT ─── */
+.page-kasir {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.main-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Penting untuk mobile! */
+  padding-bottom: 10px;
 }
 
 /* ─── TOAST ─── */
