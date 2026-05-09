@@ -12,8 +12,6 @@
       color: #2d3436;
       min-height: 100vh;
     }
-
-    /* HEADER */
     .header {
       display: flex;
       align-items: center;
@@ -30,8 +28,6 @@
       background: transparent; border: none; color: #fff;
       font-size: 1.3rem; cursor: pointer;
     }
-
-    /* LIST */
     .container {
       padding: 10px;
       padding-bottom: 40px;
@@ -51,32 +47,27 @@
       align-items: center;
       margin-bottom: 8px;
     }
-    .tx-tgl {
-      font-size: 0.8rem;
-      color: #636e72;
-    }
-    .tx-total {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #0984e3;
-    }
-    .tx-items {
-      font-size: 0.85rem;
-      color: #636e72;
-      margin-bottom: 8px;
-    }
-    .tx-kembalian {
-      font-size: 0.8rem;
-      color: #00b894;
-    }
+    .tx-tgl { font-size: 0.8rem; color: #636e72; }
+    .tx-total { font-size: 1.1rem; font-weight: 700; color: #0984e3; }
+    .tx-items { font-size: 0.85rem; color: #636e72; margin-bottom: 6px; }
+    .tx-kembalian { font-size: 0.8rem; color: #00b894; }
     .tx-empty {
       text-align: center;
       padding: 60px 20px;
       color: #b2bec3;
     }
     .tx-empty-icon { font-size: 3rem; margin-bottom: 12px; }
-
-    /* MODAL STRUK */
+    .btn-test {
+      background: #fdcb6e;
+      color: #2d3436;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 10px auto;
+      display: block;
+    }
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -139,12 +130,7 @@
       font-size: 0.95rem;
     }
     .btn-ok { background: #0984e3; color: #fff; }
-    .btn-print-modal {
-      background: #00b894;
-      color: #fff;
-    }
-
-    /* TOAST */
+    .btn-print-modal { background: #00b894; color: #fff; }
     .toast {
       position: fixed;
       bottom: 40px;
@@ -193,18 +179,31 @@
 
     // ─── LOAD RIWAYAT ───
     function loadRiwayat() {
+      const box = document.getElementById('list-riwayat');
+      if (!box) {
+        console.error('[Riwayat] Element #list-riwayat tidak ditemukan!');
+        return;
+      }
+
       let riwayat = [];
       try {
-        riwayat = JSON.parse(localStorage.getItem('kasirin_riwayat')) || [];
-      } catch(e) { riwayat = []; }
+        const raw = localStorage.getItem('kasirin_riwayat');
+        console.log('[Riwayat] Raw data:', raw);
+        riwayat = raw ? JSON.parse(raw) : [];
+      } catch(e) {
+        console.error('[Riwayat] Gagal parse JSON:', e);
+        riwayat = [];
+      }
 
-      const box = document.getElementById('list-riwayat');
+      console.log('[Riwayat] Jumlah transaksi:', riwayat.length);
 
-      if (riwayat.length === 0) {
+      if (!Array.isArray(riwayat) || riwayat.length === 0) {
         box.innerHTML = `
           <div class="tx-empty">
             <div class="tx-empty-icon">📭</div>
             <div>Belum ada transaksi</div>
+            <div style="font-size:0.8rem;margin-top:8px;">Lakukan transaksi di Menu Kasir dulu</div>
+            <button class="btn-test" onclick="buatDummy()">+ Buat Data Test</button>
           </div>
         `;
         return;
@@ -212,31 +211,58 @@
 
       box.innerHTML = '';
       riwayat.forEach((tx, idx) => {
-        const tgl = new Date(tx.waktu).toLocaleString('id-ID', {
+        // Pastikan tx punya property yang diperlukan
+        if (!tx || typeof tx !== 'object') {
+          console.warn('[Riwayat] Data invalid di index', idx);
+          return;
+        }
+
+        const tgl = tx.waktu ? new Date(tx.waktu).toLocaleString('id-ID', {
           day:'2-digit', month:'short', year:'numeric',
           hour:'2-digit', minute:'2-digit'
-        });
-        const itemSummary = tx.items.map(i => i.nama + ' (' + i.qty + ')').join(', ');
+        }) : '-';
+
+        const items = Array.isArray(tx.items) ? tx.items : [];
+        const itemSummary = items.map(i => (i.nama || 'Item') + ' (' + (i.qty || 1) + ')').join(', ');
+        const total = tx.total || 0;
+        const bayar = tx.bayar || 0;
+        const kembalian = tx.kembalian || 0;
 
         const el = document.createElement('div');
         el.className = 'tx-card';
         el.innerHTML = `
           <div class="tx-header">
             <span class="tx-tgl">${tgl}</span>
-            <span class="tx-total">${fmt(tx.total)}</span>
+            <span class="tx-total">${fmt(total)}</span>
           </div>
-          <div class="tx-items">${itemSummary}</div>
-          <div class="tx-kembalian">Kembalian: ${fmt(tx.kembalian)}</div>
+          <div class="tx-items">${itemSummary || '-'}</div>
+          <div class="tx-kembalian">Bayar: ${fmt(bayar)} | Kembalian: ${fmt(kembalian)}</div>
         `;
         el.onclick = () => previewRiwayat(tx);
         box.appendChild(el);
       });
     }
 
-    // ─── PREVIEW STRUK DARI RIWAYAT ───
+    // ─── BUAT DUMMY TEST ───
+    function buatDummy() {
+      const dummy = [{
+        items: [
+          { nama: 'Kopi Hitam', harga: 8000, qty: 2 },
+          { nama: 'Nasi Goreng', harga: 15000, qty: 1 }
+        ],
+        total: 31000,
+        bayar: 50000,
+        kembalian: 19000,
+        waktu: new Date().toISOString()
+      }];
+      localStorage.setItem('kasirin_riwayat', JSON.stringify(dummy));
+      toast('✅ Data test dibuat');
+      loadRiwayat();
+    }
+
+    // ─── PREVIEW STRUK ───
     function previewRiwayat(tx) {
       const s = getS();
-
       let struk = '';
       struk += padCenter(s.namaToko, 32) + '\n';
       if (s.alamat) struk += padCenter(s.alamat, 32) + '\n';
@@ -244,23 +270,23 @@
       struk += lineGaris(32) + '\n';
       struk += padCenter('STRUK TRANSAKSI', 32) + '\n';
       struk += lineGaris(32) + '\n';
-      struk += padKiri('Tgl: ' + new Date(tx.waktu).toLocaleString('id-ID'), 32) + '\n';
+      struk += padKiri('Tgl: ' + (tx.waktu ? new Date(tx.waktu).toLocaleString('id-ID') : '-'), 32) + '\n';
       struk += lineGaris(32) + '\n';
 
-      tx.items.forEach(i => {
-        struk += padKiri(i.nama, 32) + '\n';
-        struk += padKanan(i.qty + ' x ' + fmt(i.harga), 16) + padKanan(fmt(i.harga * i.qty), 16) + '\n';
+      const items = Array.isArray(tx.items) ? tx.items : [];
+      items.forEach(i => {
+        struk += padKiri(i.nama || 'Item', 32) + '\n';
+        struk += padKanan((i.qty || 1) + ' x ' + fmt(i.harga || 0), 16) + padKanan(fmt((i.harga || 0) * (i.qty || 1)), 16) + '\n';
       });
 
       struk += lineGaris(32) + '\n';
-      struk += padKiri('TOTAL', 16) + padKanan(fmt(tx.total), 16) + '\n';
-      struk += padKiri('BAYAR', 16) + padKanan(fmt(tx.bayar), 16) + '\n';
-      struk += padKiri('KEMBALI', 16) + padKanan(fmt(tx.kembalian), 16) + '\n';
+      struk += padKiri('TOTAL', 16) + padKanan(fmt(tx.total || 0), 16) + '\n';
+      struk += padKiri('BAYAR', 16) + padKanan(fmt(tx.bayar || 0), 16) + '\n';
+      struk += padKiri('KEMBALI', 16) + padKanan(fmt(tx.kembalian || 0), 16) + '\n';
       struk += lineGaris(32) + '\n';
       struk += padCenter(s.footer, 32) + '\n';
       struk += '\n\n\n';
 
-      // Tampilkan modal
       const lama = document.getElementById('modal-struk');
       if (lama) lama.remove();
 
@@ -273,4 +299,53 @@
             <h3>🖨 Struk Transaksi</h3>
             <button class="btn-close" onclick="tutupModal()">✕</button>
           </div>
-          
+          <div class="struk-preview">${struk.replace(/\n/g, '<br>')}</div>
+          <div class="modal-footer">
+            <button class="btn-print-modal" onclick="printDariModal('${encodeURIComponent(struk)}')">🖨 Print</button>
+            <button class="btn-ok" onclick="tutupModal()">Tutup</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function printDariModal(encodedStruk) {
+      const struk = decodeURIComponent(encodedStruk);
+      if (window.AndroidBridge && window.AndroidBridge.printStruk) {
+        window.AndroidBridge.printStruk(struk, getS().printerMAC);
+      } else if (window.Capacitor?.Plugins?.BluetoothPrinter) {
+        window.Capacitor.Plugins.BluetoothPrinter.print({ mac: getS().printerMAC, data: struk });
+      } else {
+        const w = window.open('', '_blank');
+        w.document.write('<pre style="font-family:Courier New;font-size:12px">' + struk + '</pre>');
+        w.document.close();
+        w.print();
+      }
+    }
+
+    function tutupModal() {
+      const modal = document.getElementById('modal-struk');
+      if (modal) modal.remove();
+    }
+
+    function padCenter(str, width) {
+      const pad = Math.max(0, width - (str || '').length);
+      return ' '.repeat(Math.floor(pad/2)) + (str || '') + ' '.repeat(Math.ceil(pad/2));
+    }
+    function padKiri(str, width) {
+      return (str || '') + ' '.repeat(Math.max(0, width - (str || '').length));
+    }
+    function padKanan(str, width) {
+      return ' '.repeat(Math.max(0, width - (str || '').length)) + (str || '');
+    }
+    function lineGaris(width) {
+      return '-'.repeat(width);
+    }
+
+    // ─── INIT ───
+    loadRiwayat();
+    console.log('[Riwayat] Ready');
+  </script>
+
+</body>
+</html>
