@@ -222,6 +222,20 @@ const KasirApp = {
     document.getElementById('btn-tambah-manual').addEventListener('click', () => this.tambahManual());
     document.getElementById('btn-bayar').addEventListener('click', () => this.bayar());
     document.getElementById('btn-print-ulang').addEventListener('click', () => {
+
+      // ─── TAMBAH INI ───
+    document.getElementById('btn-uang-pas').addEventListener('click', () => {
+      const total = this.updateTotal();
+      if (total <= 0) {
+        App.toast('Keranjang masih kosong');
+        return;
+      }
+      document.getElementById('input-bayar').value = total;
+      // Auto hitung kembalian = 0
+      document.getElementById('kembalian').textContent = 'Rp 0';
+      App.toast('✅ Uang pas: ' + App.formatRupiah(total));
+    });
+      
       // Print ulang struk terakhir (simpan dulu ya kalau mau fitur ini)
       App.toast('Print ulang: simpan transaksi terakhir dulu ke variabel');
     });
